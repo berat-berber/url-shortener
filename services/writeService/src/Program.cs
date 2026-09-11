@@ -12,7 +12,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("devDatabase")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("devDatabase")
+        ?? throw new InvalidOperationException("Connection string 'devDatabase' is not configured.")));
 
     
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();

@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: urlshortener
+    volumes:
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d urlshortener"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  write-service:
+    build: ./services/writeService
+    environment:
+      ConnectionStrings__devDatabase: Host=postgres;Database=urlshortener;Username=postgres;Password=postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  read-service:
+    build: ./services/readService
+    environment:
+      ConnectionStrings__devDatabase: Host=postgres;Database=urlshortener;Username=postgres;Password=postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+      args:
+        PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "8080:80"
+    depends_on:
+      - write-service
+      - read-service
+
+volumes:
+  pgdata:

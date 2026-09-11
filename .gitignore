@@ -1,0 +1,17 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+
+# Node / Astro
+client/node_modules/
+client/dist/
+client/.astro/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db

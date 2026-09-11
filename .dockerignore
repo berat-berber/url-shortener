@@ -1,0 +1,9 @@
+.git
+client/node_modules
+client/dist
+client/.astro
+**/bin
+**/obj
+.env
+.env.*
+*.md
